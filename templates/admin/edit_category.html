@@ -1,0 +1,157 @@
+{% extends 'layout.html' %}
+
+{% block title %}Edit Category - BKP Florist Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid my-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+            <div class="position-sticky pt-3">
+                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                    <span>Admin Dashboard</span>
+                </h6>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_dashboard') }}">
+                            <i class="fas fa-tachometer-alt me-1"></i> Overview
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_products') }}">
+                            <i class="fas fa-box me-1"></i> Products
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_orders') }}">
+                            <i class="fas fa-shopping-cart me-1"></i> Orders
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_customers') }}">
+                            <i class="fas fa-users me-1"></i> Customers
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('admin_categories') }}">
+                            <i class="fas fa-tag me-1"></i> Categories
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-percent me-1"></i> Promo Codes
+                        </a>
+                    </li>
+                </ul>
+                
+                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                    <span>Settings</span>
+                </h6>
+                <ul class="nav flex-column mb-2">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-cog me-1"></i> Store Settings
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('home') }}">
+                            <i class="fas fa-store me-1"></i> Visit Store
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Main content -->
+        <div class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Edit Category</h1>
+                <a href="{{ url_for('admin_categories') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Categories
+                </a>
+            </div>
+            
+            <!-- Edit Category Form -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Category Details</h6>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('edit_category', category_id=category.id) }}" method="post" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="name" class="form-label">Category Name *</label>
+                                <input type="text" class="form-control" id="name" name="name" value="{{ category.name }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="slug" class="form-label">Slug *</label>
+                                <input type="text" class="form-control" id="slug" name="slug" value="{{ category.slug }}" required>
+                                <small class="text-muted">Used in URLs, e.g. "birthday-flowers"</small>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="5">{{ category.description }}</textarea>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="image" class="form-label">Category Image</label>
+                            {% if category.image_url %}
+                                <div class="mb-2">
+                                    <img src="{{ category.image_url }}" alt="{{ category.name }}" class="img-thumbnail" style="max-height: 150px;">
+                                </div>
+                            {% endif %}
+                            <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                            <small class="text-muted">Upload a new image to replace the current one. Recommended size: 600x400 pixels</small>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{{ url_for('admin_categories') }}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Update Category</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Associated Products -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Associated Products</h6>
+                </div>
+                <div class="card-body">
+                    <p>This category is used by <strong>{{ category.product_count }}</strong> products.</p>
+                    <a href="{{ url_for('admin_products') }}?category={{ category.id }}" class="btn btn-outline-primary">
+                        <i class="fas fa-eye me-1"></i> View Products in this Category
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Auto-generate slug from name
+        const nameField = document.getElementById('name');
+        const slugField = document.getElementById('slug');
+        
+        nameField.addEventListener('input', function() {
+            if (!slugField.dataset.manuallyEdited) {
+                slugField.value = nameField.value
+                    .toLowerCase()
+                    .replace(/[^\w\s-]/g, '') // Remove special chars
+                    .replace(/\s+/g, '-') // Replace spaces with hyphens
+                    .replace(/-+/g, '-'); // Replace multiple hyphens with single hyphen
+            }
+        });
+        
+        // Track if slug has been manually edited
+        slugField.addEventListener('input', function() {
+            slugField.dataset.manuallyEdited = 'true';
+        });
+    });
+</script>
+{% endblock %} 

@@ -1,0 +1,196 @@
+{% extends 'layout.html' %}
+
+{% block title %}Customer: {{ customer.name }} - BKP Florist Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid my-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+            <div class="position-sticky pt-3">
+                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                    <span>Admin Dashboard</span>
+                </h6>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_dashboard') }}">
+                            <i class="fas fa-tachometer-alt me-1"></i> Overview
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_products') }}">
+                            <i class="fas fa-box me-1"></i> Products
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_orders') }}">
+                            <i class="fas fa-shopping-cart me-1"></i> Orders
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('admin_customers') }}">
+                            <i class="fas fa-users me-1"></i> Customers
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/categories">
+                            <i class="fas fa-tag me-1"></i> Categories
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-percent me-1"></i> Promo Codes
+                        </a>
+                    </li>
+                </ul>
+                
+                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                    <span>Settings</span>
+                </h6>
+                <ul class="nav flex-column mb-2">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-cog me-1"></i> Store Settings
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('home') }}">
+                            <i class="fas fa-store me-1"></i> Visit Store
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Main content -->
+        <div class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Customer Details</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <a href="{{ url_for('admin_customers') }}" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i> Back to Customers
+                        </a>
+                        <a href="{{ url_for('admin_edit_customer', customer_id=customer.id) }}" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-edit me-1"></i> Edit Customer
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Customer Profile -->
+            <div class="row mb-4">
+                <div class="col-lg-4">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Profile Details</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="text-center mb-4">
+                                <div class="display-1 text-secondary mb-3">
+                                    <i class="fas fa-user-circle"></i>
+                                </div>
+                                <h5 class="mb-0">{{ customer.name }}</h5>
+                                <p class="text-muted">
+                                    {% if customer.role == 'admin' %}
+                                    <span class="badge bg-danger">Admin</span>
+                                    {% else %}
+                                    <span class="badge bg-primary">Customer</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <hr>
+                            <div class="mb-3">
+                                <p class="mb-1 text-muted">Email</p>
+                                <p class="mb-0 fw-bold">{{ customer.email }}</p>
+                            </div>
+                            <div class="mb-3">
+                                <p class="mb-1 text-muted">Joined</p>
+                                <p class="mb-0 fw-bold">{{ customer.created_at.strftime('%B %d, %Y') }}</p>
+                            </div>
+                            <div class="mb-3">
+                                <p class="mb-1 text-muted">Last Login</p>
+                                <p class="mb-0 fw-bold">{% if customer.last_login %}{{ customer.last_login.strftime('%B %d, %Y at %H:%M') }}{% else %}Never{% endif %}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Customer Stats</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6 text-center">
+                                    <div class="display-5 text-primary">{{ orders|length }}</div>
+                                    <div class="text-muted">Total Orders</div>
+                                </div>
+                                <div class="col-6 text-center">
+                                    <div class="display-5 text-success">₹{{ "%.2f"|format(orders|sum(attribute='total') or 0) }}</div>
+                                    <div class="text-muted">Total Spent</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-8">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Order History</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Order ID</th>
+                                            <th>Date</th>
+                                            <th>Amount</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% if orders %}
+                                            {% for order in orders %}
+                                                <tr>
+                                                    <td>#{{ order.id }}</td>
+                                                    <td>{{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                                    <td>₹{{ "%.2f"|format(order.total) }}</td>
+                                                    <td>
+                                                        {% if order.status == 'pending' %}
+                                                            <span class="badge bg-warning">Pending</span>
+                                                        {% elif order.status == 'processing' %}
+                                                            <span class="badge bg-info">Processing</span>
+                                                        {% elif order.status == 'shipped' %}
+                                                            <span class="badge bg-primary">Shipped</span>
+                                                        {% elif order.status == 'delivered' %}
+                                                            <span class="badge bg-success">Delivered</span>
+                                                        {% elif order.status == 'cancelled' %}
+                                                            <span class="badge bg-danger">Cancelled</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        <a href="{{ url_for('admin_order_detail', order_id=order.id) }}" class="btn btn-sm btn-info">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="5" class="text-center">No orders found</td>
+                                            </tr>
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

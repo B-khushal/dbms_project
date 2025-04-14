@@ -1,0 +1,217 @@
+{% extends 'layout.html' %}
+
+{% block title %}Checkout - BKP Florist{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4">Checkout</h1>
+    
+    <form action="{{ url_for('checkout') }}" method="post">
+        <div class="row">
+            <!-- Shipping and Billing Information -->
+            <div class="col-lg-8">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Contact Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="customer_name" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="customer_name" name="customer_name" value="{{ session.name if session.loggedin else '' }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="customer_email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="customer_email" name="customer_email" value="{{ session.email if session.loggedin else '' }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="customer_phone" class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" id="customer_phone" name="customer_phone" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Shipping Address</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label for="shipping_address" class="form-label">Address</label>
+                                <input type="text" class="form-control" id="shipping_address" name="shipping_address" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="shipping_city" class="form-label">City</label>
+                                <input type="text" class="form-control" id="shipping_city" name="shipping_city" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="shipping_state" class="form-label">State</label>
+                                <input type="text" class="form-control" id="shipping_state" name="shipping_state" required>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="shipping_postal_code" class="form-label">Postal Code</label>
+                                <input type="text" class="form-control" id="shipping_postal_code" name="shipping_postal_code" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="shipping_country" class="form-label">Country</label>
+                                <select class="form-select" id="shipping_country" name="shipping_country" required>
+                                    <option value="United States">United States</option>
+                                    <option value="Canada">Canada</option>
+                                    <option value="United Kingdom">United Kingdom</option>
+                                    <option value="Australia">Australia</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Billing Address</h5>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="same-as-shipping" checked>
+                            <label class="form-check-label text-white" for="same-as-shipping">Same as shipping</label>
+                        </div>
+                    </div>
+                    <div class="card-body" id="billing-address-form" style="display: none;">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label for="billing_address" class="form-label">Address</label>
+                                <input type="text" class="form-control" id="billing_address" name="billing_address">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="billing_city" class="form-label">City</label>
+                                <input type="text" class="form-control" id="billing_city" name="billing_city">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="billing_state" class="form-label">State</label>
+                                <input type="text" class="form-control" id="billing_state" name="billing_state">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="billing_postal_code" class="form-label">Postal Code</label>
+                                <input type="text" class="form-control" id="billing_postal_code" name="billing_postal_code">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="billing_country" class="form-label">Country</label>
+                                <select class="form-select" id="billing_country" name="billing_country">
+                                    <option value="United States">United States</option>
+                                    <option value="Canada">Canada</option>
+                                    <option value="United Kingdom">United Kingdom</option>
+                                    <option value="Australia">Australia</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Payment Method</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="radio" name="payment_method" id="credit-card" value="credit_card" checked>
+                            <label class="form-check-label" for="credit-card">
+                                Credit Card
+                            </label>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="radio" name="payment_method" id="paypal" value="paypal">
+                            <label class="form-check-label" for="paypal">
+                                PayPal
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="payment_method" id="cash-on-delivery" value="cash_on_delivery">
+                            <label class="form-check-label" for="cash-on-delivery">
+                                Cash on Delivery
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Order Summary -->
+            <div class="col-lg-4">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Order Summary</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            {% for item in cart_items %}
+                                <div class="d-flex justify-content-between mb-2">
+                                    <div>
+                                        <span>{{ item.name }}</span>
+                                        <small class="d-block text-muted">Qty: {{ item.quantity }}</small>
+                                    </div>
+                                    <span>₹{{ "%.2f"|format(item.price * item.quantity) }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Subtotal</span>
+                            <span>₹{{ "%.2f"|format(subtotal) }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Shipping</span>
+                            <span>₹{{ "%.2f"|format(shipping_cost) }}</span>
+                        </div>
+                        <div class="input-group mb-3 mt-3">
+                            <input type="text" class="form-control" placeholder="Promo Code" name="promo_code">
+                            <button class="btn btn-outline-primary" type="button">Apply</button>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between mb-3">
+                            <strong>Total</strong>
+                            <strong>₹{{ "%.2f"|format(total) }}</strong>
+                        </div>
+                        
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">Place Order</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const shippingAddressForm = document.getElementById('same-as-shipping');
+        const billingAddressForm = document.getElementById('billing-address-form');
+        
+        // Toggle billing address form visibility
+        shippingAddressForm.addEventListener('change', function() {
+            if (this.checked) {
+                billingAddressForm.style.display = 'none';
+                // Copy shipping address to billing address fields
+                document.getElementById('billing_address').value = document.getElementById('shipping_address').value;
+                document.getElementById('billing_city').value = document.getElementById('shipping_city').value;
+                document.getElementById('billing_state').value = document.getElementById('shipping_state').value;
+                document.getElementById('billing_postal_code').value = document.getElementById('shipping_postal_code').value;
+                document.getElementById('billing_country').value = document.getElementById('shipping_country').value;
+            } else {
+                billingAddressForm.style.display = 'block';
+            }
+        });
+        
+        // Copy shipping address fields to billing when they change
+        const shippingFields = ['address', 'city', 'state', 'postal_code', 'country'];
+        shippingFields.forEach(field => {
+            const shippingField = document.getElementById('shipping_' + field);
+            shippingField.addEventListener('change', function() {
+                if (shippingAddressForm.checked) {
+                    document.getElementById('billing_' + field).value = this.value;
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %} 

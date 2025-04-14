@@ -1,0 +1,38 @@
+{% extends 'layout.html' %}
+
+{% block title %}Order Confirmation - BKP Florist{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="text-center mb-5">
+        <i class="fas fa-check-circle fa-5x text-success mb-3"></i>
+        <h1>Thank You for Your Order!</h1>
+        <p class="lead">Your order has been placed successfully.</p>
+        <p><strong>Order #:</strong> {{ order_id }}</p>
+    </div>
+    
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Order Details</h5>
+                </div>
+                <div class="card-body">
+                    <p>We've sent a confirmation email to your inbox with your order details.</p>
+                    <p>If you have any questions regarding your order, please contact our customer service team at <a href="mailto:support@bkpflorist.com">support@bkpflorist.com</a> or call us at (555) 123-4567.</p>
+                    
+                    <div class="alert alert-info mt-3">
+                        <h6><i class="fas fa-truck me-2"></i> Delivery Information</h6>
+                        <p class="mb-0">Your order will be processed and dispatched within 24 hours. You will receive a delivery confirmation email with tracking information once your order has been shipped.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <a href="{{ url_for('home') }}" class="btn btn-primary me-2">Return to Home</a>
+                <a href="{{ url_for('products') }}" class="btn btn-outline-primary">Continue Shopping</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

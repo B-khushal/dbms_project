@@ -1,0 +1,129 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="hero-section text-center">
+    <div class="container">
+        <h1 class="display-4">Welcome to BKP Florist</h1>
+        <p class="lead mb-4">Beautiful flowers for every occasion - Birthdays, Anniversaries, Weddings & More</p>
+        <a href="{{ url_for('products') }}" class="btn btn-primary btn-lg">Shop Now</a>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Featured Products Section -->
+    <section class="mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Featured Arrangements</h2>
+            <a href="{{ url_for('products') }}" class="btn btn-outline-primary">View All</a>
+        </div>
+        
+        <div class="row">
+            {% if featured_products %}
+                {% for product in featured_products %}
+                    <div class="col-md-3 mb-4">
+                        <div class="card product-card h-100">
+                            {% if product.image_url %}
+                                <img src="{{ product.image_url }}" class="card-img-top" alt="{{ product.name }}">
+                            {% else %}
+                                <img src="https://via.placeholder.com/300x200?text=No+Image" class="card-img-top" alt="No Image">
+                            {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title">{{ product.name }}</h5>
+                                <p class="card-text text-muted">{{ product.short_description|truncate(60) }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-primary fw-bold">₹{{ "%.2f"|format(product.price) }}</span>
+                                    <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn btn-sm btn-outline-primary">View</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12 text-center">
+                    <p>No featured products available.</p>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+    
+    <!-- Categories Section -->
+    <section class="mb-5">
+        <h2 class="mb-4">Shop by Category</h2>
+        
+        <div class="row">
+            {% for category in categories %}
+                <div class="col-md-4 mb-4">
+                    <div class="card category-card">
+                        {% if category.image_url %}
+                            <img src="{{ category.image_url }}" class="card-img-top" alt="{{ category.name }}">
+                        {% else %}
+                            <img src="{{ url_for('static', filename='images/categories/d' + loop.index|string if loop.index <= 3 else (loop.index % 3 + 1)|string + '.jpg') }}" class="card-img-top" alt="{{ category.name }}">
+                        {% endif %}
+                        <div class="card-body text-center">
+                            <h5 class="card-title">{{ category.name }}</h5>
+                            <p class="card-text">{{ category.description|truncate(80) }}</p>
+                            <a href="{{ url_for('products', category=category.id) }}" class="btn btn-outline-primary">Browse</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+    
+    <!-- Why Choose Us Section -->
+    <section class="mb-5">
+        <h2 class="text-center mb-4">Why Choose BKP Florist?</h2>
+        
+        <div class="row text-center">
+            <div class="col-md-3 mb-4">
+                <div class="p-3">
+                    <i class="fas fa-truck fa-3x mb-3 text-primary"></i>
+                    <h5>Fast Delivery</h5>
+                    <p class="text-muted">Same-day delivery for orders placed before 2 PM.</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="p-3">
+                    <i class="fas fa-leaf fa-3x mb-3 text-primary"></i>
+                    <h5>Fresh Flowers</h5>
+                    <p class="text-muted">All our arrangements use the freshest blooms.</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="p-3">
+                    <i class="fas fa-heart fa-3x mb-3 text-primary"></i>
+                    <h5>Handcrafted</h5>
+                    <p class="text-muted">Each arrangement is made with love and care.</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="p-3">
+                    <i class="fas fa-medal fa-3x mb-3 text-primary"></i>
+                    <h5>Satisfaction Guaranteed</h5>
+                    <p class="text-muted">Not satisfied? We'll make it right.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Newsletter Signup -->
+    <section class="bg-light p-5 rounded">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h3>Join Our Newsletter</h3>
+                <p>Subscribe to receive updates, special offers, and floral inspiration.</p>
+            </div>
+            <div class="col-md-6">
+                <form class="row g-3">
+                    <div class="col-8">
+                        <input type="email" class="form-control" placeholder="Your email address">
+                    </div>
+                    <div class="col-4">
+                        <button type="submit" class="btn btn-primary w-100">Subscribe</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %} 

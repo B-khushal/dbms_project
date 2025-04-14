@@ -1,0 +1,176 @@
+{% extends 'layout.html' %}
+
+{% block title %}{{ product.name }} - BKP Florist{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('home') }}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('products') }}">Shop</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('products', category=product.category_id) }}">{{ product.category_name }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+        </ol>
+    </nav>
+    
+    <div class="row">
+        <!-- Product Images -->
+        <div class="col-md-6 mb-4">
+            <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-indicators">
+                    {% for image in product_images %}
+                        <button type="button" data-bs-target="#productCarousel" data-bs-slide-to="{{ loop.index0 }}" {% if loop.first %}class="active"{% endif %}></button>
+                    {% else %}
+                        <button type="button" data-bs-target="#productCarousel" data-bs-slide-to="0" class="active"></button>
+                    {% endfor %}
+                </div>
+                <div class="carousel-inner rounded">
+                    {% if product_images %}
+                        {% for image in product_images %}
+                            <div class="carousel-item {% if loop.first %}active{% endif %}">
+                                <img src="{{ image.image_url }}" class="d-block w-100" alt="{{ product.name }}">
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="carousel-item active">
+                            <img src="https://via.placeholder.com/600x400?text=No+Image" class="d-block w-100" alt="No Image">
+                        </div>
+                    {% endif %}
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+            
+            <!-- Thumbnail navigation -->
+            {% if product_images|length > 1 %}
+                <div class="row mt-3">
+                    {% for image in product_images %}
+                        <div class="col-3 mb-3">
+                            <a href="#" data-bs-target="#productCarousel" data-bs-slide-to="{{ loop.index0 }}">
+                                <img src="{{ image.image_url }}" class="img-thumbnail" alt="Thumbnail">
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Product Details -->
+        <div class="col-md-6">
+            <div class="mb-2">
+                <span class="badge bg-secondary">{{ product.category_name }}</span>
+                {% if product.in_stock %}
+                    <span class="badge bg-success">In Stock</span>
+                {% else %}
+                    <span class="badge bg-danger">Out of Stock</span>
+                {% endif %}
+            </div>
+            <h1 class="mb-3">{{ product.name }}</h1>
+            <h3 class="text-primary mb-4">₹{{ "%.2f"|format(product.price) }}</h3>
+            
+            <p>{{ product.short_description }}</p>
+            
+            <hr>
+            
+            <form action="{{ url_for('add_to_cart') }}" method="post" class="mb-4">
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+                <div class="row align-items-center">
+                    <div class="col-md-3">
+                        <label for="quantity" class="form-label">Quantity</label>
+                        <input type="number" class="form-control" id="quantity" name="quantity" value="1" min="1" {% if not product.in_stock %}disabled{% endif %}>
+                    </div>
+                    <div class="col-md-9 mt-md-0 mt-3">
+                        <button type="submit" class="btn btn-primary w-100" {% if not product.in_stock %}disabled{% endif %}>
+                            <i class="fas fa-shopping-cart me-2"></i> Add to Cart
+                        </button>
+                    </div>
+                </div>
+            </form>
+            
+            <div class="accordion" id="productAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingDescription">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDescription" aria-expanded="true" aria-controls="collapseDescription">
+                            Description
+                        </button>
+                    </h2>
+                    <div id="collapseDescription" class="accordion-collapse collapse show" aria-labelledby="headingDescription" data-bs-parent="#productAccordion">
+                        <div class="accordion-body">
+                            {{ product.description|default('No description available.') }}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingDelivery">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDelivery" aria-expanded="false" aria-controls="collapseDelivery">
+                            Delivery Information
+                        </button>
+                    </h2>
+                    <div id="collapseDelivery" class="accordion-collapse collapse" aria-labelledby="headingDelivery" data-bs-parent="#productAccordion">
+                        <div class="accordion-body">
+                            <p>We offer same-day delivery for orders placed before 2 PM local time, Monday through Saturday.</p>
+                            <p>Sunday deliveries are available in select areas with an additional fee.</p>
+                            <p>Delivery fee is ₹10.00 within our standard delivery area.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingCare">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCare" aria-expanded="false" aria-controls="collapseCare">
+                            Care Instructions
+                        </button>
+                    </h2>
+                    <div id="collapseCare" class="accordion-collapse collapse" aria-labelledby="headingCare" data-bs-parent="#productAccordion">
+                        <div class="accordion-body">
+                            <ul>
+                                <li>Keep your flowers in a cool location away from direct sunlight, heat sources, and fruits.</li>
+                                <li>Check water level daily and refill as needed.</li>
+                                <li>Change the water every 2-3 days.</li>
+                                <li>Trim stems at an angle every few days to extend vase life.</li>
+                                <li>Remove wilted blooms to keep the arrangement fresh and beautiful.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Related Products -->
+    {% if related_products %}
+        <section class="mt-5">
+            <h3 class="mb-4">You May Also Like</h3>
+            <div class="row">
+                {% for product in related_products %}
+                    <div class="col-md-3 mb-4">
+                        <div class="card product-card h-100">
+                            {% if product.image_url %}
+                                <img src="{{ product.image_url }}" class="card-img-top" alt="{{ product.name }}">
+                            {% else %}
+                                <img src="https://via.placeholder.com/300x200?text=No+Image" class="card-img-top" alt="No Image">
+                            {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title">{{ product.name }}</h5>
+                                <p class="card-text text-muted">{{ product.short_description|truncate(60) }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-primary fw-bold">₹{{ "%.2f"|format(product.price) }}</span>
+                                    <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn btn-sm btn-outline-primary">View</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+</div>
+{% endblock %} 
